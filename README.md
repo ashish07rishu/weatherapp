@@ -11,7 +11,7 @@ Built with modern web technologies and enhanced with glassmorphism design, SkySy
 ### Features:
 
 - **🎨 Modern Animated UI:** Experience beautiful glassmorphism design with smooth animations and hover effects
-- **📱 Responsive Design:** Enjoy a seamless experience across various devices with WeatherVista's responsive UI
+- **📱 Responsive Design:** Enjoy a seamless experience across various devices with SkySync's responsive UI
 - **🌈 Dynamic Gradients:** Beautiful gradient backgrounds that change based on weather conditions
 - **⚡ Loading Animations:** Smooth loading spinners and entrance animations for better user experience
 - **🔔 Smart Notifications:** Elegant notification system for user feedback and updates
@@ -29,7 +29,7 @@ Built with modern web technologies and enhanced with glassmorphism design, SkySy
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/ashish07rishu/SkySync-Modern-Weather-App.git`
+1. Clone the repository: `git clone https://github.com/ashish07rishu/weatherapp.git`
 2. Open `index.html` in your preferred browser to launch the app
 3. Enjoy the beautiful animations and smooth user experience!
 
@@ -66,8 +66,8 @@ Contributions are welcome! Feel free to fork this repository and submit pull req
 
 ## Support
 
-If you encounter any issues or have suggestions, [open an issue](https://github.com/wasimtikki120/WeatherVista-Interactive-Weather-App/issues).
+If you encounter any issues or have suggestions, [open an issue](https://github.com/ashish07rishu/weatherapp/issues).
 
 ## About
 
-WeatherVista is the result of a passion for creating user-friendly applications that empower individuals to make informed decisions. Inspired by a love for technology and the desire to simplify weather information, Mohammad Wasim Tikki set out to develop a weather app that seamlessly integrates accuracy with an engaging user experience. Join us in exploring the world of WeatherVista!
+SkySync is the result of a passion for creating user-friendly applications that empower individuals to make informed decisions. Inspired by a love for technology and the desire to simplify weather information, Ashish Kumar set out to develop a weather app that seamlessly integrates accuracy with an engaging user experience. Join us in exploring the world of modern weather forecasting with SkySync!
