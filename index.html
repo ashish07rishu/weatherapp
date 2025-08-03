@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SkySync - Modern Weather App with beautiful animations and real-time weather data. Stay ahead of the weather with style.">
+    <meta name="keywords" content="weather, forecast, modern, app, SkySync, animations, responsive">
+    <meta name="author" content="Ashish Kumar">
+    <title>SkySync - Modern Weather App</title>
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+
+    <div class="loading-spinner" id="loading-spinner">
+        <div class="spinner"></div>
+        <p>SkySync is loading...</p>
+    </div>
+
+    <div class="wrapper">
+        <div class="sidebar">
+            <div>
+                <form class="search" id="search">
+                    <input type="text" id="query" placeholder="Search for a city..." />
+                    <button><i class="fas fa-search"></i></button>
+                </form>
+                <div class="weather-icon">
+                    <img id="icon" src="icons/sun/4.png" alt="" />
+                </div>
+                <div class="temperature">
+                    <h1 id="temp">0</h1>
+                    <span class="temp-unit">°C</span>
+                </div>
+                <div class="date-time">
+                    <p id="date-time">Monday, 12:00</p>
+                </div>
+                <div class="divider"></div>
+                <div class="condition-rain">
+                    <div class="condition">
+                        <i class="fas fa-cloud"></i>
+                        <p id="condition">condition</p>
+                    </div>
+                    <div class="rain">
+                        <i class="fas fa-tint"></i>
+                        <p id="rain">perc - 0%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="location">
+                <div class="location-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="location-text">
+                    <p id="location">location</p>
+                </div>
+            </div>
+        </div>
+        <div class="main">
+            <nav>
+                <ul class="options">
+                    <button class="hourly">today</button>
+                    <button class="week active">week</button>
+                </ul>
+                <ul class="options units">
+                    <button class="celcius active">°C</button>
+                    <button class="fahrenheit">°F</button>
+                </ul>
+            </nav>
+            <div class="cards" id="weather-cards"></div>
+            <div class="highlights">
+                <h2 class="heading">today's highlights</h2>
+                <div class="cards">
+                    <div class="card2" data-tooltip="🌞 UV INDEX: Measures ultraviolet radiation strength from the sun. Scale: 0-2 (Low/Safe), 3-5 (Moderate), 6-7 (High - need protection), 8-10 (Very High), 11+ (Extreme - avoid sun). High UV exposure can damage skin and eyes.">
+                        <h4 class="card-heading">UV Index <i class="fas fa-info-circle tooltip-icon"></i></h4>
+                        <div class="content">
+                            <div class="card-spinner">
+                                <div class="mini-spinner"></div>
+                            </div>
+                            <p class="uv-index">0</p>
+                            <p class="uv-text">Low</p>
+                        </div>
+                    </div>
+                    <div class="card2" data-tooltip="💨 WIND STATUS: Wind speed measured in km/h. Ranges: 0-5 (Calm), 6-20 (Light breeze), 21-39 (Windy), 40+ (Strong wind). Important for outdoor activities, aviation, and storm alerts.">
+                        <h4 class="card-heading">Wind Status <i class="fas fa-info-circle tooltip-icon"></i></h4>
+                        <div class="content">
+                            <div class="card-spinner">
+                                <div class="mini-spinner"></div>
+                            </div>
+                            <p class="wind-speed">0</p>
+                            <p>km/h</p>
+                        </div>
+                    </div>
+                    <div class="card2" data-tooltip="🌅 SUNRISE & SUNSET: Local times when the sun rises and sets. Format: HH:MM AM/PM. Useful for daily planning and calculating daylight duration. Times vary by location and season.">
+                        <h4 class="card-heading">Sunrise & Sunset <i class="fas fa-info-circle tooltip-icon"></i></h4>
+                        <div class="content">
+                            <div class="card-spinner">
+                                <div class="mini-spinner"></div>
+                            </div>
+                            <p class="sun-rise">0</p>
+                            <p class="sun-set">0</p>
+                        </div>
+                    </div>
+                    <div class="card2" data-tooltip="💧 HUMIDITY: Percentage of water vapor in the air. Ranges: 0-30% (Dry), 40-60% (Comfortable), 60-100% (Humid). High humidity affects sweat evaporation and makes weather feel hotter.">
+                        <h4 class="card-heading">Humidity <i class="fas fa-info-circle tooltip-icon"></i></h4>
+                        <div class="content">
+                            <div class="card-spinner">
+                                <div class="mini-spinner"></div>
+                            </div>
+                            <p class="humidity">0</p>
+                            <p class="humidity-status">Normal</p>
+                        </div>
+                    </div>
+                    <div class="card2" data-tooltip="👁 VISIBILITY: How far you can clearly see, measured in kilometers. 10+ km is clear visibility. Crucial for driving, flying, and fog/smog warnings. Affected by weather conditions and air pollution.">
+                        <h4 class="card-heading">Visibility <i class="fas fa-info-circle tooltip-icon"></i></h4>
+                        <div class="content">
+                            <div class="card-spinner">
+                                <div class="mini-spinner"></div>
+                            </div>
+                            <p class="visibilty">0</p>
+                            <p class="visibilty-status">Normal</p>
+                        </div>
+                    </div>
+                    <div class="card2" data-tooltip="🌫 AIR QUALITY (AQI): Index showing pollution levels. Scale: 0-50 (Good), 51-100 (Moderate), 101-150 (Unhealthy for Sensitive), 151-200 (Unhealthy), 201-300 (Very Unhealthy), 301-500 (Hazardous). Poor air quality affects health, especially for asthma/heart conditions.">
+                        <h4 class="card-heading">Air Quality <i class="fas fa-info-circle tooltip-icon"></i></h4>
+                        <div class="content">
+                            <div class="card-spinner">
+                                <div class="mini-spinner"></div>
+                            </div>
+                            <p class="air-quality">0</p>
+                            <p class="air-quality-status">Normal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="credits">SkySync - Modern Weather App by <a href="https://github.com/ashish07rishu" target="_blank">Ashish Kumar</a></p>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+
+</body>
+
+</html>
