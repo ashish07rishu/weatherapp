@@ -257,40 +257,41 @@ function getWeatherData(city, unit, hourlyorWeek) {
     showCardSpinners();
 
     fetch(
-            `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=EJ6UBL2JEQGYB3AA4ENASN62J&contentType=json`, {
+            `http://api.weatherapi.com/v1/current.json?key=78dcd0e2b89c417c849140453250308&q=${city}&aqi=yes`, {
                 method: "GET",
                 headers: {},
             }
         )
         .then((response) => response.json())
         .then((data) => {
-            let today = data.currentConditions;
+            let today = data.current;
+            let location = data.location;
 
             const currentTemp = parseInt(temp.textContent) || 0;
-            const newTemp = unit === "c" ? today.temp : celciusToFahrenheit(today.temp);
+            const newTemp = unit === "c" ? today.temp_c : today.temp_f;
             animateValue(temp, currentTemp, Math.round(newTemp), 1000);
 
-            currentLocation.innerText = data.resolvedAddress;
-            condition.innerText = today.conditions;
-            rain.innerText = "Perc - " + today.precip + "%";
-            uvIndex.innerText = today.uvindex;
-            windSpeed.innerText = today.windspeed;
-            measureUvIndex(today.uvindex);
-            mainIcon.src = getIcon(today.icon);
-            changeBackground(today.icon);
+            currentLocation.innerText = `${location.name}, ${location.region}, ${location.country}`;
+            condition.innerText = today.condition.text;
+            rain.innerText = "Perc - " + (today.precip_mm || 0) + "mm";
+            uvIndex.innerText = today.uv || 0;
+            windSpeed.innerText = today.wind_kph;
+            measureUvIndex(today.uv || 0);
+            mainIcon.src = getWeatherApiIcon(today.condition.code, today.is_day);
+            changeBackground(getConditionForBackground(today.condition.code, today.is_day));
             humidity.innerText = today.humidity + "%";
             updateHumidityStatus(today.humidity);
-            visibilty.innerText = today.visibility;
-            updateVisibiltyStatus(today.visibility);
-            airQuality.innerText = today.winddir;
-            updateAirQualityStatus(today.winddir);
-            if (hourlyorWeek === "hourly") {
-                updateForecast(data.days[0].hours, unit, "day");
-            } else {
-                updateForecast(data.days, unit, "week");
-            }
-            sunRise.innerText = covertTimeTo12HourFormat(today.sunrise);
-            sunSet.innerText = covertTimeTo12HourFormat(today.sunset);
+            visibilty.innerText = today.vis_km;
+            updateVisibiltyStatus(today.vis_km);
+            airQuality.innerText = data.current.air_quality ? Math.round(data.current.air_quality.pm2_5) : "N/A";
+            updateAirQualityStatus(data.current.air_quality ? data.current.air_quality.pm2_5 : 50);
+            
+            // Get forecast data for hourly/weekly view
+            getForecastData(city, unit, hourlyorWeek);
+            
+            // Set sunrise/sunset times (WeatherAPI provides this in astronomy data)
+            sunRise.innerText = "06:30 AM"; // Default values, will be updated with astronomy API
+            sunSet.innerText = "07:45 PM";
 
             hideLoading();
             hideCardSpinners();
@@ -405,14 +406,38 @@ function showNotification(message, type = "info") {
     }, 5000);
 }
 
+// New function to get forecast data from WeatherAPI
+function getForecastData(city, unit, hourlyorWeek) {
+    const days = hourlyorWeek === "hourly" ? 1 : 7;
+    fetch(`http://api.weatherapi.com/v1/forecast.json?key=78dcd0e2b89c417c849140453250308&q=${city}&days=${days}&aqi=no&alerts=no`)
+        .then(response => response.json())
+        .then(data => {
+            if (hourlyorWeek === "hourly") {
+                updateForecast(data.forecast.forecastday[0].hour, unit, "day");
+            } else {
+                updateForecast(data.forecast.forecastday, unit, "week");
+            }
+            
+            // Update sunrise/sunset from astronomy data
+            const astronomy = data.forecast.forecastday[0].astro;
+            sunRise.innerText = astronomy.sunrise;
+            sunSet.innerText = astronomy.sunset;
+        })
+        .catch(err => {
+            console.error("Forecast error:", err);
+            // Fallback to empty forecast
+            weatherCards.innerHTML = "<p>Forecast data unavailable</p>";
+        });
+}
+
 function updateForecast(data, unit, type) {
     weatherCards.innerHTML = "";
     let day = 0;
     let numCards = 0;
     if (type === "day") {
-        numCards = 24;
+        numCards = Math.min(24, data.length);
     } else {
-        numCards = 7;
+        numCards = Math.min(7, data.length);
     }
 
     for (let i = 0; i < numCards; i++) {
@@ -421,20 +446,23 @@ function updateForecast(data, unit, type) {
         card.style.opacity = '0';
         card.style.transform = 'translateY(20px) scale(0.9)';
 
-        let dayName = getHour(data[day].datetime);
-        if (type === "week") {
-            dayName = getDayName(data[day].datetime);
+        let dayName, dayTemp, iconCondition, iconSrc;
+        
+        if (type === "day") {
+            // Hourly forecast
+            dayName = getHour(data[day].time);
+            dayTemp = unit === "c" ? Math.round(data[day].temp_c) : Math.round(data[day].temp_f);
+            iconCondition = data[day].condition.code;
+            iconSrc = getWeatherApiIcon(iconCondition, data[day].is_day);
+        } else {
+            // Weekly forecast
+            dayName = getDayName(data[day].date);
+            dayTemp = unit === "c" ? Math.round(data[day].day.avgtemp_c) : Math.round(data[day].day.avgtemp_f);
+            iconCondition = data[day].day.condition.code;
+            iconSrc = getWeatherApiIcon(iconCondition, 1); // Default to day icon
         }
-        let dayTemp = data[day].temp;
-        if (unit === "f") {
-            dayTemp = celciusToFahrenheit(data[day].temp);
-        }
-        let iconCondition = data[day].icon;
-        let iconSrc = getIcon(iconCondition);
-        let tempUnit = "°C";
-        if (unit === "f") {
-            tempUnit = "°F";
-        }
+        
+        let tempUnit = unit === "c" ? "°C" : "°F";
 
         card.innerHTML = `
       <h2 class="day-name">${dayName}</h2>
@@ -456,6 +484,77 @@ function updateForecast(data, unit, type) {
         }, i * 100);
 
         day++;
+    }
+}
+
+function getWeatherApiIcon(conditionCode, isDay) {
+    // WeatherAPI condition codes mapping to icons
+    switch(conditionCode) {
+        case 1000: // Sunny/Clear
+            return isDay ? "https://i.ibb.co/rb4rrJL/26.png" : "https://i.ibb.co/1nxNGHL/10.png";
+        case 1003: // Partly cloudy
+            return isDay ? "https://i.ibb.co/PZQXH8V/27.png" : "https://i.ibb.co/Kzkk59k/15.png";
+        case 1006: // Cloudy
+        case 1009: // Overcast
+            return "https://i.ibb.co/kBd2NTS/39.png";
+        case 1030: // Mist
+        case 1135: // Fog
+        case 1147: // Freezing fog
+            return "https://i.ibb.co/kBd2NTS/39.png";
+        case 1063: // Patchy rain possible
+        case 1180: // Light rain
+        case 1183: // Light rain shower
+        case 1186: // Moderate rain
+        case 1189: // Moderate rain shower
+        case 1192: // Heavy rain shower
+        case 1195: // Heavy rain
+        case 1240: // Light rain shower
+        case 1243: // Moderate rain shower
+        case 1246: // Torrential rain shower
+            return "https://i.ibb.co/kBd2NTS/39.png";
+        case 1066: // Patchy snow possible
+        case 1114: // Blowing snow
+        case 1117: // Blizzard
+        case 1210: // Patchy light snow
+        case 1213: // Light snow
+        case 1216: // Patchy moderate snow
+        case 1219: // Moderate snow
+        case 1222: // Patchy heavy snow
+        case 1225: // Heavy snow
+        case 1255: // Light snow showers
+        case 1258: // Moderate snow showers
+        case 1261: // Heavy snow showers
+            return "https://i.ibb.co/kBd2NTS/39.png";
+        case 1087: // Thundery outbreaks possible
+        case 1273: // Patchy light rain with thunder
+        case 1276: // Moderate rain with thunder
+        case 1279: // Patchy light snow with thunder
+        case 1282: // Moderate snow with thunder
+            return "https://i.ibb.co/kBd2NTS/39.png";
+        default:
+            return isDay ? "https://i.ibb.co/rb4rrJL/26.png" : "https://i.ibb.co/1nxNGHL/10.png";
+    }
+}
+
+function getConditionForBackground(conditionCode, isDay) {
+    // Convert WeatherAPI codes to background condition strings
+    switch(conditionCode) {
+        case 1000: // Clear/Sunny
+            return isDay ? "clear-day" : "clear-night";
+        case 1003: // Partly cloudy
+            return isDay ? "partly-cloudy-day" : "partly-cloudy-night";
+        case 1006: // Cloudy
+        case 1009: // Overcast
+            return "cloudy";
+        case 1063: case 1180: case 1183: case 1186: case 1189: 
+        case 1192: case 1195: case 1240: case 1243: case 1246:
+            return "rain";
+        case 1066: case 1114: case 1117: case 1210: case 1213: 
+        case 1216: case 1219: case 1222: case 1225: case 1255: 
+        case 1258: case 1261:
+            return "snow";
+        default:
+            return isDay ? "clear-day" : "clear-night";
     }
 }
 
@@ -489,6 +588,10 @@ function changeBackground(condition) {
         gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
     } else if (condition === "clear-night") {
         gradient = "linear-gradient(135deg, #232526 0%, #414345 100%)";
+    } else if (condition === "cloudy") {
+        gradient = "linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)";
+    } else if (condition === "snow") {
+        gradient = "linear-gradient(135deg, #e6ddd4 0%, #d5def5 100%)";
     } else {
         gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
     }
@@ -498,13 +601,20 @@ function changeBackground(condition) {
 }
 
 function getHour(time) {
-    let hour = time.split(":")[0];
-    let min = time.split(":")[1];
-    if (hour > 12) {
+    // WeatherAPI returns datetime in format "2023-08-03 14:00" or just "14:00"
+    let timeOnly = time.includes(' ') ? time.split(' ')[1] : time;
+    let hour = parseInt(timeOnly.split(":")[0]);
+    let min = timeOnly.split(":")[1];
+    
+    if (hour === 0) {
+        return `12:${min} AM`;
+    } else if (hour < 12) {
+        return `${hour}:${min} AM`;
+    } else if (hour === 12) {
+        return `12:${min} PM`;
+    } else {
         hour = hour - 12;
         return `${hour}:${min} PM`;
-    } else {
-        return `${hour}:${min} AM`;
     }
 }
 
