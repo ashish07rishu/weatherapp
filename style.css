@@ -1,16 +1,37 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 :root {
-  --primary-color: #5598fd;
-  --secondary-color: #4a90e2;
-  --accent-color: #ff6b6b;
-  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  /* Enhanced Color Palette */
+  --primary-accent: #00bcd4;
+  --secondary-accent: #2196f3;
+  --warning-color: #ff5722;
+  --success-color: #4caf50;
+  
+  /* Background Colors */
+  --main-bg: #f5f7fa;
+  --card-bg: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --border-color: #e0e0e0;
+  
+  /* Typography Colors */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --text-value: #00bcd4;
+  
+  /* Weather Condition Themes */
+  --sunny-bg: linear-gradient(135deg, #fefcea 0%, #f1da36 100%);
+  --cloudy-bg: linear-gradient(135deg, #d7d2cc 0%, #304352 100%);
+  --rainy-bg: linear-gradient(135deg, #c9d6ff 0%, #e2e2e2 100%);
+  --snow-bg: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  --night-bg: linear-gradient(135deg, #232526 0%, #414345 100%);
+  
+  /* Glass Effect */
   --glass-bg: rgba(255, 255, 255, 0.25);
   --glass-border: rgba(255, 255, 255, 0.18);
   --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  --shadow-dark: 0 4px 15px 0 rgba(0, 0, 0, 0.1);
+  --shadow-enhanced: 0 4px 10px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -69,9 +90,10 @@ body {
   min-height: 100vh;
   min-width: 1000px;
   padding: 50px;
-  background: var(--gradient-1);
+  background: var(--main-bg);
   transition: background 0.5s ease;
   overflow-x: auto;
+  color: var(--text-primary);
 }
 
 img {
@@ -82,13 +104,12 @@ img {
   display: flex;
   width: 1200px;
   min-width: 900px;
-  border-radius: 25px;
+  border-radius: 20px;
   overflow: hidden;
   backdrop-filter: blur(10px);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-light);
+  background: transparent;
   animation: slideInUp 0.8s ease-out;
+  gap: 0;
 }
 
 @keyframes slideInUp {
@@ -106,13 +127,16 @@ img {
   width: 30%;
   min-width: 250px;
   padding: 30px 20px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
+  border-radius: 16px;
+  box-shadow: var(--shadow-enhanced);
+  border: 1px solid var(--border-color);
 }
 
 .sidebar::before {
@@ -122,7 +146,7 @@ img {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--gradient-3);
+  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
   animation: shimmer 2s ease-in-out infinite;
 }
 
@@ -301,7 +325,7 @@ img {
   font-size: 70px;
   font-weight: 300;
   line-height: 1;
-  background: var(--gradient-3);
+  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -312,7 +336,7 @@ img {
   font-size: 40px;
   margin-top: -10px;
   display: block;
-  color: var(--secondary-color);
+  color: var(--text-value);
   font-weight: 500;
 }
 .divider {
@@ -400,11 +424,15 @@ img {
   width: 100%;
   min-width: 400px;
   padding: 30px 40px;
-  background: rgba(246, 246, 248, 0.95);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
   position: relative;
   padding-bottom: 90px;
   animation: fadeInRight 0.8s ease-out 0.3s both;
+  border-radius: 16px;
+  box-shadow: var(--shadow-enhanced);
+  border: 1px solid var(--border-color);
+  margin-left: 20px;
 }
 
 .main nav {
@@ -570,7 +598,7 @@ img {
   font-size: 20px;
   font-weight: 600;
   text-transform: capitalize;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 10px;
   position: relative;
 }
@@ -582,25 +610,27 @@ img {
   left: 0;
   width: 60px;
   height: 3px;
-  background: var(--gradient-3);
+  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
   border-radius: 2px;
 }
 
 .card2 {
   width: 250px;
   height: 150px;
-  border-radius: 20px;
-  color: #1a1a1a;
-  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  color: var(--text-primary);
+  background: var(--card-bg);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border-color);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-enhanced);
+  text-align: center;
 }
 
 .card2::before {
@@ -610,7 +640,7 @@ img {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--gradient-3);
+  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
   transform: scaleX(0);
   transition: transform 0.4s ease;
 }
@@ -620,12 +650,16 @@ img {
 }
 
 .card2:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(85, 152, 253, 0.25);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-hover);
 }
 
 .card2 .card-heading {
-  color: #888;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 15px;
@@ -982,3 +1016,93 @@ img {
     font-size: 14px;
   }
 }
+
+/* Enhanced Value Display Styles */
+.card2 .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.card2 .content p:first-of-type,
+.uv-index, .wind-speed, .sun-rise, .humidity, 
+.visibilty, .air-quality {
+  color: var(--text-value) !important;
+  font-size: 2rem !important;
+  font-weight: 600 !important;
+  margin: 5px 0 !important;
+}
+
+.card2 .content p:last-of-type,
+.uv-text, .humidity-status, .visibilty-status, 
+.air-quality-status {
+  color: var(--text-secondary) !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+}
+
+/* Tooltip Icon Enhancement */
+.tooltip-icon {
+  color: var(--primary-accent) !important;
+  transition: all 0.3s ease;
+}
+
+.tooltip-icon:hover {
+  color: var(--secondary-accent) !important;
+  transform: scale(1.1);
+}
+
+/* Success/Warning Color Variants */
+.card2.success .content p:first-of-type {
+  color: var(--success-color) !important;
+}
+
+.card2.warning .content p:first-of-type {
+  color: var(--warning-color) !important;
+}
+
+/* Weather Condition Theme Classes */
+body.sunny {
+  background: var(--sunny-bg);
+}
+
+body.cloudy {
+  background: var(--cloudy-bg);
+}
+
+body.rainy {
+  background: var(--rainy-bg);
+}
+
+body.snow {
+  background: var(--snow-bg);
+}
+
+body.night {
+  background: var(--night-bg);
+}
+
+/* Enhanced Animation for Cards */
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card2 {
+  animation: cardAppear 0.6s ease-out forwards;
+}
+
+.card2:nth-child(1) { animation-delay: 0.1s; }
+.card2:nth-child(2) { animation-delay: 0.2s; }
+.card2:nth-child(3) { animation-delay: 0.3s; }
+.card2:nth-child(4) { animation-delay: 0.4s; }
+.card2:nth-child(5) { animation-delay: 0.5s; }
+.card2:nth-child(6) { animation-delay: 0.6s; }
