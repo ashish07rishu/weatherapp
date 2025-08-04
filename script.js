@@ -257,7 +257,7 @@ function getWeatherData(city, unit, hourlyorWeek) {
     showCardSpinners();
 
     fetch(
-            `http://api.weatherapi.com/v1/current.json?key=78dcd0e2b89c417c849140453250308&q=${city}&aqi=yes`, {
+            `http://api.weatherapi.com/v1/current.json?key=78dcd0e2b89c417c849140453250308&q=${city}&aqi=no`, {
                 method: "GET",
                 headers: {},
             }
@@ -283,12 +283,12 @@ function getWeatherData(city, unit, hourlyorWeek) {
             updateHumidityStatus(today.humidity);
             visibilty.innerText = today.vis_km;
             updateVisibiltyStatus(today.vis_km);
-            airQuality.innerText = data.current.air_quality ? Math.round(data.current.air_quality.pm2_5) : "N/A";
-            updateAirQualityStatus(data.current.air_quality ? data.current.air_quality.pm2_5 : 50);
-            
+            airQuality.innerText = "N/A";
+            updateAirQualityStatus(50); // Default moderate status
+
             // Get forecast data for hourly/weekly view
             getForecastData(city, unit, hourlyorWeek);
-            
+
             // Set sunrise/sunset times (WeatherAPI provides this in astronomy data)
             sunRise.innerText = "06:30 AM"; // Default values, will be updated with astronomy API
             sunSet.innerText = "07:45 PM";
@@ -417,7 +417,7 @@ function getForecastData(city, unit, hourlyorWeek) {
             } else {
                 updateForecast(data.forecast.forecastday, unit, "week");
             }
-            
+
             // Update sunrise/sunset from astronomy data
             const astronomy = data.forecast.forecastday[0].astro;
             sunRise.innerText = astronomy.sunrise;
@@ -447,7 +447,7 @@ function updateForecast(data, unit, type) {
         card.style.transform = 'translateY(20px) scale(0.9)';
 
         let dayName, dayTemp, iconCondition, iconSrc;
-        
+
         if (type === "day") {
             // Hourly forecast
             dayName = getHour(data[day].time);
@@ -461,7 +461,7 @@ function updateForecast(data, unit, type) {
             iconCondition = data[day].day.condition.code;
             iconSrc = getWeatherApiIcon(iconCondition, 1); // Default to day icon
         }
-        
+
         let tempUnit = unit === "c" ? "°C" : "°F";
 
         card.innerHTML = `
@@ -489,7 +489,7 @@ function updateForecast(data, unit, type) {
 
 function getWeatherApiIcon(conditionCode, isDay) {
     // WeatherAPI condition codes mapping to icons
-    switch(conditionCode) {
+    switch (conditionCode) {
         case 1000: // Sunny/Clear
             return isDay ? "https://i.ibb.co/rb4rrJL/26.png" : "https://i.ibb.co/1nxNGHL/10.png";
         case 1003: // Partly cloudy
@@ -538,7 +538,7 @@ function getWeatherApiIcon(conditionCode, isDay) {
 
 function getConditionForBackground(conditionCode, isDay) {
     // Convert WeatherAPI codes to background condition strings
-    switch(conditionCode) {
+    switch (conditionCode) {
         case 1000: // Clear/Sunny
             return isDay ? "clear-day" : "clear-night";
         case 1003: // Partly cloudy
@@ -546,12 +546,29 @@ function getConditionForBackground(conditionCode, isDay) {
         case 1006: // Cloudy
         case 1009: // Overcast
             return "cloudy";
-        case 1063: case 1180: case 1183: case 1186: case 1189: 
-        case 1192: case 1195: case 1240: case 1243: case 1246:
+        case 1063:
+        case 1180:
+        case 1183:
+        case 1186:
+        case 1189:
+        case 1192:
+        case 1195:
+        case 1240:
+        case 1243:
+        case 1246:
             return "rain";
-        case 1066: case 1114: case 1117: case 1210: case 1213: 
-        case 1216: case 1219: case 1222: case 1225: case 1255: 
-        case 1258: case 1261:
+        case 1066:
+        case 1114:
+        case 1117:
+        case 1210:
+        case 1213:
+        case 1216:
+        case 1219:
+        case 1222:
+        case 1225:
+        case 1255:
+        case 1258:
+        case 1261:
             return "snow";
         default:
             return isDay ? "clear-day" : "clear-night";
@@ -605,7 +622,7 @@ function getHour(time) {
     let timeOnly = time.includes(' ') ? time.split(' ')[1] : time;
     let hour = parseInt(timeOnly.split(":")[0]);
     let min = timeOnly.split(":")[1];
-    
+
     if (hour === 0) {
         return `12:${min} AM`;
     } else if (hour < 12) {
